@@ -2,12 +2,13 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { type LeadInput, quoteTotal } from "./quotation";
+import { getPricing } from "./pricing";
 export const statuses = ["New", "Contacted", "Quoted", "Won", "Lost"] as const;
 export type Lead = Omit<LeadInput, "website"> & { id: string; createdAt: string; total: number; status: typeof statuses[number] };
 const directory = () => process.env.LEADS_DATA_DIR || path.join(process.cwd(), "data", "leads");
 export async function saveLead(input: LeadInput) {
   const { website: _website, ...details } = input;
-  const lead: Lead = { ...details, id: randomUUID(), createdAt: new Date().toISOString(), total: quoteTotal(input.items), status: "New" };
+  const lead: Lead = { ...details, id: randomUUID(), createdAt: new Date().toISOString(), total: quoteTotal(input.items, await getPricing()), status: "New" };
   await mkdir(directory(), { recursive: true });
   await writeFile(path.join(directory(), `${lead.id}.json`), JSON.stringify(lead), { flag: "wx", mode: 0o600 });
   return lead;

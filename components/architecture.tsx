@@ -31,6 +31,16 @@ export function Architecture() {
 }
 export function WindowDrawing({ type = "sliding-window", dark = false }: { type?: string; dark?: boolean }) {
   const door = type === "sliding-door";
+  if (type === "awning") return <svg viewBox="0 0 260 210" className="window-drawing" role="img" aria-label="Awning concept">
+    <path d="M35 65h175v95H35z" fill="#b6ccc5" stroke="currentColor" strokeWidth="6"/>
+    <path d="M35 65h175l30 55H15z" fill="#d9dfcb" stroke="currentColor" strokeWidth="6"/>
+    <path d="M80 65l-8 55m53-55v55m43-55l13 55M35 120v55m175-55v55" stroke="currentColor" strokeWidth="4"/>
+  </svg>;
+  if (type === "cabinet") return <svg viewBox="0 0 260 210" className="window-drawing" role="img" aria-label="Aluminum cabinet concept">
+    <path d="M40 35h180v140H40z" fill="#d9dfcb" stroke="currentColor" strokeWidth="7"/>
+    <path d="M130 38v134M42 70h176M52 178v15m156-15v15" stroke="currentColor" strokeWidth="5"/>
+    <path d="M114 104v28m32-28v28M85 52h20m50 0h20" stroke="currentColor" strokeWidth="4"/>
+  </svg>;
   return <svg viewBox="0 0 260 210" className={`window-drawing ${dark ? "dark" : ""}`} role="img" aria-label={type.replaceAll("-", " ")}>
     <path d="M37 188L231 169L249 181L55 202Z" fill="#aeb7aa" opacity=".3"/>
     <path d={door ? "M59 21h144v169H59z" : "M30 40h200v137H30z"} fill="#b6ccc5" stroke="currentColor" strokeWidth="7"/>

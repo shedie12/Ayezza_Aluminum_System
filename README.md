@@ -27,7 +27,11 @@ npm run test:e2e
 
 ## Quotation rules
 
-Edit `lib/quotation.ts` to replace the clearly labeled sample rates with approved business prices. Currency is Philippine pesos. Each line is width × height (meters) × quantity × product rate × finish multiplier, rounded to two decimals. The server independently validates all fields and recalculates totals. Installation, delivery, taxes, and site-specific work are excluded. Requests are estimates, not final sales contracts.
+Sign in at `/admin`, then open **Pricing settings** (`/admin/settings`). Set awning rates per piece and other product rates per square meter or square foot, then save. Initial rates are examples and must be replaced with approved business prices. The catalog includes cabinets, sliding doors, sliding windows, awnings, casement windows and glass partitions.
+
+Dimensions are entered in meters. Square-foot pricing converts area using `1 / (0.3048 * 0.3048)` before multiplying by rate, quantity and finish multiplier, then rounds each line to two decimals. Natural silver has no premium; matte black adds 15% and powder white adds 10%. Cabinet area is front width x height; awnings use rate per piece x quantity (plus the selected finish premium), independent of dimensions. Awning width and projection are collected only as specifications. Older saved awning rates retain their numeric value but are treated as per-piece prices; review and save the correct rate in Settings. Depth, hardware, installation, delivery, taxes and site-specific work require final pricing.
+
+The server loads saved pricing and independently recalculates submitted estimates. Existing leads keep their original total. Settings are stored atomically in `pricing.json` inside `LEADS_DATA_DIR` (default `data/leads`); optionally set `PRICING_DATA_FILE` to a persistent absolute file path. Back up this file along with leads.
 
 ## Leads and deployment
 
