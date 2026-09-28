@@ -1,0 +1,52 @@
+import { test, expect } from "@playwright/test";
+
+test("customer quotation becomes a protected, manageable lead", async ({ page }) => {
+  await page.goto("/admin");
+  await expect(page.getByRole("heading", { name: "Welcome back." })).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /Open up to/ })).toBeVisible();
+  await page.getByRole("link", { name: "Build your quotation" }).click();
+  await expect(page.locator(".quote-total")).toHaveText("₱7,452.00");
+  await page.getByRole("button", { name: "Add another item" }).click();
+  await expect(page.locator(".quote-total")).toHaveText("₱14,904.00");
+  await page.getByRole("button", { name: "Remove item 2" }).click();
+  await page.getByLabel("Full name").fill("Browser Test Customer");
+  await page.getByLabel("Email address").fill("browser-test@example.com");
+  await page.getByLabel("Phone number").fill("09123456789");
+  await page.getByLabel("Project location").fill("Manila");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Request a formal quotation" }).click();
+  await expect(page.getByRole("heading", { name: "Your next space starts here." })).toBeVisible();
+  await page.goto("/admin");
+  await page.getByLabel("Team password").fill("wrong-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.locator(".form-error")).toHaveText("Incorrect password. Please try again.");
+  await page.getByLabel("Team password").fill("local-browser-test-password-only");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: "Project leads" })).toBeVisible();
+  const card = page.locator(".lead-card").filter({ hasText: "browser-test@example.com" }).first();
+  await expect(card).toContainText("₱7,452.00");
+  await card.getByLabel("Status").selectOption("Contacted");
+  await card.getByRole("button", { name: "Save status" }).click();
+  await page.reload();
+  await expect(card.getByLabel("Status")).toHaveValue("Contacted");
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page.getByRole("heading", { name: "Welcome back." })).toBeVisible();
+});
+
+test("mobile layout fits the viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole("link", { name: "Build your quotation" }).click();
+  await expect(page.getByLabel("Full name")).toBeVisible();
+  await page.getByRole("button", { name: "Add another item" }).click();
+  await page.getByRole("button", { name: "Remove item 2" }).click();
+  await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Add another item" }).click();
+  await page.getByRole("button", { name: "Remove item 2" }).click();
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
+});
